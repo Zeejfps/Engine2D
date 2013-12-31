@@ -17,15 +17,13 @@ public abstract class GameShell extends Canvas {
 
     private final int width, height, scale;
     private JFrame gameWindow;
-    private Engine engine;
+    private Engine gameEngine;
 
     private volatile boolean running = false;
 
-    private float fps;
-
-    private static BufferedImage drawImage;
-    private static int[] pixels;
     private final ArrayList<GameView> views = new ArrayList<GameView>();
+    private BufferedImage drawImage;
+    private int[] pixels;
 
     private int ticks = 0;
     private int frames = 0;
@@ -36,10 +34,8 @@ public abstract class GameShell extends Canvas {
         this.width = width;
         this.height = height;
         this.scale = scale;
-        setFps(fps);
 
-        engine = new Engine(Clock.NS_IN_SEC / tps);
-
+        gameEngine = new Engine(Clock.NS_IN_SEC / tps, Clock.NS_IN_SEC / fps);
         drawImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt)drawImage.getRaster().getDataBuffer()).getData();
 
@@ -51,7 +47,7 @@ public abstract class GameShell extends Canvas {
         if (running) return;
 
         running = true;
-        new Thread(engine).start();
+        new Thread(gameEngine).start();
 
     }
 
@@ -121,9 +117,9 @@ public abstract class GameShell extends Canvas {
 
     public void setFps(int fps) {
         if (fps < 1)
-            fps = 9999;
+            gameEngine.nsPerFrame = (float)Clock.NS_IN_SEC / 9999f;
         else
-            this.fps = (float)Clock.NS_IN_SEC/(float)fps;
+            gameEngine.nsPerFrame = (float)Clock.NS_IN_MS / (float)fps;
     }
 
     public int getWidth() {
@@ -144,14 +140,16 @@ public abstract class GameShell extends Canvas {
 
     private class Engine implements Runnable {
 
-        private int MAX_FRAME_SKIP = 9;
-        private final float nsPerTick;
-
+        private final int maxSkippedFrames = 9;
         private final Clock ticksClock = new Clock();
         private final Clock framesClock = new Clock();
 
-        public Engine(float nsPerTick) {
+        private float nsPerTick;
+        private float nsPerFrame;
+
+        public Engine(float nsPerTick, float nsPerFrame) {
             this.nsPerTick = nsPerTick;
+            this.nsPerFrame = nsPerFrame;
         }
 
         @Override
@@ -170,7 +168,7 @@ public abstract class GameShell extends Canvas {
                 runTime += ticksClock.getTimePerTick();
 
                 skippedFrames = 0;
-                while (runTime >= nsPerTick && skippedFrames <= MAX_FRAME_SKIP) {
+                while (runTime >= nsPerTick && skippedFrames <= maxSkippedFrames) {
 
                     tick();
                     runTime -= nsPerTick;
@@ -180,7 +178,7 @@ public abstract class GameShell extends Canvas {
                 }
 
                 framesClock.tick();
-                if (framesClock.getRunTimeNs() >= fps) {
+                if (framesClock.getRunTimeNs() >= nsPerFrame) {
 
                     render();
                     display();
