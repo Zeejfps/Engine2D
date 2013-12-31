@@ -15,19 +15,16 @@ import java.util.ArrayList;
  */
 public abstract class GameShell extends Canvas {
 
+    private final ArrayList<GameView> views = new ArrayList<GameView>();
     private final int width, height, scale;
     private JFrame gameWindow;
     private Engine gameEngine;
 
-    private volatile boolean running = false;
-
-    private final ArrayList<GameView> views = new ArrayList<GameView>();
     private BufferedImage drawImage;
     private int[] pixels;
 
-    private int ticks = 0;
-    private int frames = 0;
     protected boolean displayStats = true;
+    private volatile boolean running = false;
 
     public GameShell(final int width, final int height, final int scale, final String title, int tps, int fps) {
 
@@ -146,6 +143,9 @@ public abstract class GameShell extends Canvas {
 
         private float nsPerTick;
         private float nsPerFrame;
+
+        private int ticks = 0;
+        private int frames = 0;
 
         public Engine(float nsPerTick, float nsPerFrame) {
             this.nsPerTick = nsPerTick;
