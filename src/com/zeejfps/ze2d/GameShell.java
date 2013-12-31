@@ -18,9 +18,6 @@ public abstract class GameShell extends Canvas {
     private final int width, height, scale;
     private JFrame gameWindow;
     private Engine engine;
-    private Clock engineClock = new Clock();
-    private Clock ticksClock = new Clock();
-    private Clock framesClock = new Clock();
 
     private volatile boolean running = false;
 
@@ -32,6 +29,7 @@ public abstract class GameShell extends Canvas {
 
     private int ticks = 0;
     private int frames = 0;
+    protected boolean displayStats = true;
 
     public GameShell(final int width, final int height, final int scale, final String title, int tps, int fps) {
 
@@ -53,9 +51,6 @@ public abstract class GameShell extends Canvas {
         if (running) return;
 
         running = true;
-        engineClock.start();
-        ticksClock.start();
-        framesClock.start();
         new Thread(engine).start();
 
     }
@@ -64,9 +59,6 @@ public abstract class GameShell extends Canvas {
 
         if (!running) return;
 
-        engineClock.stop();
-        ticksClock.stop();
-        framesClock.stop();
         running = false;
 
     }
@@ -89,37 +81,6 @@ public abstract class GameShell extends Canvas {
         gameWindow.setVisible(true);
 
         this.requestFocusInWindow();
-
-    }
-
-    private void tick() {
-
-        if (ticksClock.getRunTimeMs() >= 1000) {
-
-            System.out.println("Ticks: " + ticks + " Frames: " + frames);
-            ticksClock.reset();
-            ticks = 0;
-            frames = 0;
-
-        }
-
-        update();
-    }
-
-    private void render() {
-
-        BufferStrategy bs = getBufferStrategy();
-        if (bs == null) {
-            createBufferStrategy(3);
-            return;
-        }
-
-        render();
-        Graphics g = bs.getDrawGraphics();
-        g.drawImage(drawImage, 0, 0, getWidth(), getHeight(), null);
-        g.dispose();
-
-        bs.show();
 
     }
 
@@ -175,14 +136,19 @@ public abstract class GameShell extends Canvas {
 
     public abstract void onStart();
 
-    public abstract void onStop();
+    public abstract void tick();
 
-    public abstract void update();
+    public abstract void render();
+
+    public abstract void onStop();
 
     private class Engine implements Runnable {
 
         private int MAX_FRAME_SKIP = 9;
         private final float nsPerTick;
+
+        private final Clock ticksClock = new Clock();
+        private final Clock framesClock = new Clock();
 
         public Engine(float nsPerTick) {
             this.nsPerTick = nsPerTick;
@@ -193,6 +159,9 @@ public abstract class GameShell extends Canvas {
 
             int skippedFrames;
             long runTime = 0;
+
+            ticksClock.start();
+            framesClock.start();
 
             onStart();
             while (running) {
@@ -207,7 +176,6 @@ public abstract class GameShell extends Canvas {
                     runTime -= nsPerTick;
                     skippedFrames ++;
 
-                    ticksClock.reset();
                     ticks++;
                 }
 
@@ -221,8 +189,26 @@ public abstract class GameShell extends Canvas {
                     frames++;
                 }
 
+                if (displayStats) {
+
+                    if (ticksClock.getRunTimeMs() >= 1000) {
+
+                        System.out.println("Ticks: " + ticks + " Frames: " + frames);
+
+                        ticks = 0;
+                        frames = 0;
+
+                        ticksClock.reset();
+
+                    }
+
+                }
+
             }
             onStop();
+
+            ticksClock.stop();
+            framesClock.stop();
 
         }
 
