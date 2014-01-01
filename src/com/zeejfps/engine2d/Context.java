@@ -1,6 +1,7 @@
 package com.zeejfps.engine2d;
 
 import com.zeejfps.engine2d.util.Keyboard;
+import com.zeejfps.engine2d.util.Mouse;
 
 /**
  * Created by Zeejfps on 1/1/14.

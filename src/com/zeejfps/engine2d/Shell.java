@@ -8,7 +8,7 @@ import java.awt.*;
 /**
  * Created by Zeejfps on 12/28/13.
  */
-public abstract class GameShell {
+public abstract class Shell {
 
     private final JFrame gameWindow;
     private final Screen gameScreen;
@@ -18,7 +18,7 @@ public abstract class GameShell {
     protected boolean displayStats = true;
     private volatile boolean running = false;
 
-    public GameShell(final int width, final int height, final int scale, final String title, int tps, int fps) {
+    public Shell(final int width, final int height, final int scale, final String title, int tps, int fps) {
 
         gameEngine = new Engine(Clock.NS_IN_SEC / tps, Clock.NS_IN_SEC / fps);
 

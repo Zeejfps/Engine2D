@@ -1,5 +1,7 @@
 package com.zeejfps.engine2d;
 
+import com.zeejfps.engine2d.util.Renderable;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
