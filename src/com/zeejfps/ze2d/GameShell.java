@@ -1,27 +1,19 @@
 package com.zeejfps.ze2d;
 
 import com.zeejfps.ze2d.util.Clock;
-import com.zeejfps.ze2d.util.Keyboard;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.util.ArrayList;
 
 /**
  * Created by Zeejfps on 12/28/13.
  */
-public abstract class GameShell extends Canvas {
+public abstract class GameShell {
 
-    private final ArrayList<GameView> views = new ArrayList<GameView>();
     private final int width, height, scale;
+    private Screen gameScreen;
     private JFrame gameWindow;
     private Engine gameEngine;
-
-    private BufferedImage drawImage;
-    private int[] pixels;
 
     protected boolean displayStats = true;
     private volatile boolean running = false;
@@ -33,8 +25,6 @@ public abstract class GameShell extends Canvas {
         this.scale = scale;
 
         gameEngine = new Engine(Clock.NS_IN_SEC / tps, Clock.NS_IN_SEC / fps);
-        drawImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        pixels = ((DataBufferInt)drawImage.getRaster().getDataBuffer()).getData();
 
         initDisplay(title);
     }
@@ -56,60 +46,19 @@ public abstract class GameShell extends Canvas {
 
     }
 
-    public void add(GameView view) {
-        views.add(view);
-    }
-
     private void initDisplay(String title) {
 
-        this.addKeyListener(Keyboard.getInstance());
+        gameScreen = new Screen(0, 0, width, height, scale);
 
         gameWindow = new JFrame(title);
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameWindow.setResizable(false);
         gameWindow.setLayout(new BorderLayout());
-        gameWindow.add(this, BorderLayout.CENTER);
+        gameWindow.add(gameScreen, BorderLayout.CENTER);
         gameWindow.pack();
         gameWindow.setLocationRelativeTo(null);
         gameWindow.setVisible(true);
 
-        this.requestFocusInWindow();
-
-    }
-
-    private void display() {
-
-        BufferStrategy bs = getBufferStrategy();
-        if (bs == null) {
-            createBufferStrategy(3);
-            return;
-        }
-
-        for (GameView view : views) {
-
-            for (int i = 0; i < view.getHeight(); i++) {
-
-                for (int j = 0; j < view.getWidth(); j++) {
-
-                    pixels[(i + view.getPosY())*width + j] = view.pixels[i*view.getWidth() + j];
-
-                }
-
-            }
-
-        }
-
-        Graphics g = bs.getDrawGraphics();
-        g.drawImage(drawImage, 0, 0, getWidth(), getHeight(), null);
-        g.dispose();
-
-        bs.show();
-
-    }
-
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(width * scale, height * scale);
     }
 
     public void setFps(int fps) {
@@ -119,19 +68,15 @@ public abstract class GameShell extends Canvas {
             gameEngine.nsPerFrame = (float)Clock.NS_IN_MS / (float)fps;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
+    public Screen getScreen() {
+        return gameScreen;
     }
 
     public abstract void onStart();
 
-    public abstract void tick();
+    public abstract void tick(GameShell context);
 
-    public abstract void render();
+    public abstract void render(Screen screen);
 
     public abstract void onStop();
 
@@ -170,7 +115,7 @@ public abstract class GameShell extends Canvas {
                 skippedFrames = 0;
                 while (runTime >= nsPerTick && skippedFrames <= maxSkippedFrames) {
 
-                    tick();
+                    tick(GameShell.this);
                     runTime -= nsPerTick;
                     skippedFrames ++;
 
@@ -180,8 +125,7 @@ public abstract class GameShell extends Canvas {
                 framesClock.tick();
                 if (framesClock.getRunTimeNs() >= nsPerFrame) {
 
-                    render();
-                    display();
+                    render(gameScreen);
 
                     framesClock.reset();
                     frames++;
