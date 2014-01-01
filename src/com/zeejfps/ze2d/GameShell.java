@@ -10,47 +10,44 @@ import java.awt.*;
  */
 public abstract class GameShell {
 
-    private final int width, height, scale;
-    private Screen gameScreen;
-    private JFrame gameWindow;
-    private Engine gameEngine;
+    private final JFrame gameWindow;
+    private final Screen gameScreen;
+    private final Context gameContext;
+    private final Engine gameEngine;
 
     protected boolean displayStats = true;
     private volatile boolean running = false;
 
     public GameShell(final int width, final int height, final int scale, final String title, int tps, int fps) {
 
-        this.width = width;
-        this.height = height;
-        this.scale = scale;
-
         gameEngine = new Engine(Clock.NS_IN_SEC / tps, Clock.NS_IN_SEC / fps);
+
+        gameWindow = new JFrame(title);
+        gameScreen = new Screen(0, 0, width, height, scale);
+        gameContext = new Context();
 
         initDisplay(title);
     }
 
     public final synchronized void start() {
 
-        if (running) return;
-
-        running = true;
-        new Thread(gameEngine).start();
-
+        if (!running) {
+            running = true;
+            new Thread(gameEngine).start();
+        }
     }
 
     public final synchronized void stop() {
 
-        if (!running) return;
-
-        running = false;
-
+        if (running)
+            running = false;
     }
 
     private void initDisplay(String title) {
 
-        gameScreen = new Screen(0, 0, width, height, scale);
+        gameScreen.addKeyListener(gameContext.keyboard);
+        gameScreen.addMouseListener(gameContext.mouse);
 
-        gameWindow = new JFrame(title);
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameWindow.setResizable(false);
         gameWindow.setLayout(new BorderLayout());
@@ -72,9 +69,13 @@ public abstract class GameShell {
         return gameScreen;
     }
 
+    public Context getContext() {
+        return gameContext;
+    }
+
     public abstract void onStart();
 
-    public abstract void tick(GameShell context);
+    public abstract void tick(Context context);
 
     public abstract void render(Screen screen);
 
@@ -115,7 +116,7 @@ public abstract class GameShell {
                 skippedFrames = 0;
                 while (runTime >= nsPerTick && skippedFrames <= maxSkippedFrames) {
 
-                    tick(GameShell.this);
+                    tick(gameContext);
                     runTime -= nsPerTick;
                     skippedFrames ++;
 
