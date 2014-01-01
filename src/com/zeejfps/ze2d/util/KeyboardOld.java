@@ -6,9 +6,9 @@ import java.awt.event.KeyListener;
 /**
  * Created by Zeejfps on 12/28/13.
  */
-public class Keyboard implements KeyListener {
+public class KeyboardOld implements KeyListener {
 
-    private static Keyboard instance = null;
+    private static KeyboardOld instance = null;
 
     private static boolean[] keysDown = new boolean[256];
     private static boolean[] keysPressed = new boolean[256];
@@ -55,9 +55,9 @@ public class Keyboard implements KeyListener {
         return keysDown[key];
     }
 
-    public static Keyboard getInstance() {
+    public static KeyboardOld getInstance() {
         if (instance == null)
-            instance = new Keyboard();
+            instance = new KeyboardOld();
         return instance;
     }
 

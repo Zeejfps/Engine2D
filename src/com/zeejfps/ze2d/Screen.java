@@ -10,42 +10,44 @@ import java.awt.image.DataBufferInt;
  */
 public class Screen extends Canvas implements Renderable {
 
-    private final int x, y, width, height, scale, minX, minY, maxX, maxY;
-    private BufferedImage drawImage;
-    private int[] pixels;
+    private final int offsetX, offsetY, width, height, scale, minX, minY, maxX, maxY;
+    private final BufferedImage drawImage;
+    private final int[] pixels;
     private int clearColor = 0x000000;
 
-    public Screen(int x, int y, int width, int height, int scale) {
+    public Screen(int offsetX, int offsetY, int width, int height, int scale) {
 
-        this.x = x; this.y = y;
+        this.offsetX = offsetX; this.offsetY = offsetY;
         this.width = width; this.height = height;
         this.scale = scale;
 
         drawImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt)drawImage.getRaster().getDataBuffer()).getData();
 
-        minX = x - width/2;
-        minY = y - height/2;
+        minX = offsetX;
+        minY = offsetY;
 
-        maxX = x + width/2;
-        maxY = y + height/2;
+        maxX = offsetX + width;
+        maxY = offsetY + height;
 
     }
 
     public void render(Renderable renderable) {
 
-        final int localX = renderable.getX() - renderable.getWidth()/2 - minX;
-        final int localY = renderable.getY() - renderable.getHeight()/2 - minY;
+        final int localX = renderable.getOffsetX();
+        final int localY = renderable.getOffsetY();
 
+        int pixelPosX;
+        int pixelPosY;
         for (int i = 0; i < renderable.getHeight(); i++) {
 
             for (int j = 0; j < renderable.getWidth(); j++) {
 
-                int pixelPosX = localX + j;
+                pixelPosX = localX + j;
                 if (pixelPosX < minX || pixelPosX >= maxX)
                     continue;
 
-                int pixelPosY = localY + i;
+                pixelPosY = localY + i;
                 if (pixelPosY < minY || pixelPosY >= maxY) {
                     continue;
                 }
@@ -83,7 +85,7 @@ public class Screen extends Canvas implements Renderable {
         }
 
         Graphics g = bs.getDrawGraphics();
-        g.drawImage(drawImage, 0, 0, getWidth(), getHeight(), null);
+        g.drawImage(drawImage, 0, 0, width*scale, height*scale, null);
         g.dispose();
 
         bs.show();
@@ -96,13 +98,13 @@ public class Screen extends Canvas implements Renderable {
     }
 
     @Override
-    public int getX() {
-        return x;
+    public int getOffsetX() {
+        return offsetX;
     }
 
     @Override
-    public int getY() {
-        return y;
+    public int getOffsetY() {
+        return offsetY;
     }
 
     @Override

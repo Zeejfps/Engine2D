@@ -5,9 +5,9 @@ package com.zeejfps.ze2d;
  */
 public interface Renderable {
 
-    public int getX();
+    public int getOffsetX();
 
-    public int getY();
+    public int getOffsetY();
 
     public int getWidth();
 
