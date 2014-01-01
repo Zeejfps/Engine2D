@@ -1,4 +1,4 @@
-package com.zeejfps.ze2d;
+package com.zeejfps.engine2d.util;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

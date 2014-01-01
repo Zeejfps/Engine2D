@@ -1,4 +1,6 @@
-package com.zeejfps.ze2d;
+package com.zeejfps.engine2d;
+
+import com.zeejfps.engine2d.util.Keyboard;
 
 /**
  * Created by Zeejfps on 1/1/14.

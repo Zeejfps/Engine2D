@@ -1,6 +1,6 @@
-package com.zeejfps.ze2d;
+package com.zeejfps.engine2d;
 
-import com.zeejfps.ze2d.util.Clock;
+import com.zeejfps.engine2d.util.Clock;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,6 +56,7 @@ public abstract class GameShell {
         gameWindow.setLocationRelativeTo(null);
         gameWindow.setVisible(true);
 
+        gameScreen.requestFocusInWindow();
     }
 
     public void setFps(int fps) {

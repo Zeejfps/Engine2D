@@ -1,4 +1,4 @@
-package com.zeejfps.ze2d;
+package com.zeejfps.engine2d;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

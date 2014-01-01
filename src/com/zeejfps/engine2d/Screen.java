@@ -1,4 +1,4 @@
-package com.zeejfps.ze2d;
+package com.zeejfps.engine2d;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
