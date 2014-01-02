@@ -1,6 +1,6 @@
-package com.zeejfps.engine2d;
+package com.zeejfps.engine2d.core;
 
-import com.zeejfps.engine2d.util.Renderable;
+import com.zeejfps.engine2d.core.util.Renderable;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -10,11 +10,11 @@ import java.awt.image.DataBufferInt;
 /**
  * Created by Zeejfps on 12/29/13.
  */
-public class Screen extends Canvas implements Renderable {
+public class Screen extends Canvas {
 
     private final int offsetX, offsetY, width, height, scale, minX, minY, maxX, maxY;
-    private final BufferedImage drawImage;
-    private int[] pixels;
+    private static  BufferedImage drawImage;
+    private static int[] pixels;
     private int clearColor = 0x000000;
 
     private BufferStrategy bs = null;
@@ -25,7 +25,7 @@ public class Screen extends Canvas implements Renderable {
         this.width = width; this.height = height;
         this.scale = scale;
 
-        drawImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        drawImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         pixels = ((DataBufferInt)drawImage.getRaster().getDataBuffer()).getData();
 
         minX = offsetX;
@@ -55,8 +55,7 @@ public class Screen extends Canvas implements Renderable {
                 if (pixelPosY < minY || pixelPosY >= maxY) {
                     continue;
                 }
-
-                pixels[pixelPosY*getWidth() + pixelPosX] = renderable.getPixels()[i* renderable.getWidth() + j];
+                pixels[pixelPosY*width + pixelPosX] = renderable.getPixels()[i* renderable.getWidth() + j];
 
             }
 
@@ -74,8 +73,9 @@ public class Screen extends Canvas implements Renderable {
 
     public void clear() {
 
+        System.out.println("clear");
         for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = clearColor;
+            pixels[i] = 0xff000000;
         }
 
     }
@@ -89,7 +89,7 @@ public class Screen extends Canvas implements Renderable {
         }
 
         Graphics g = bs.getDrawGraphics();
-        g.drawImage(drawImage, 0, 0, 640, 480, null);
+        g.drawImage(drawImage, 0, 0, width*scale, height*scale, null);
         g.dispose();
 
         bs.show();
@@ -101,28 +101,4 @@ public class Screen extends Canvas implements Renderable {
         return new Dimension(width * scale, height * scale);
     }
 
-    @Override
-    public int getOffsetX() {
-        return offsetX;
-    }
-
-    @Override
-    public int getOffsetY() {
-        return offsetY;
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    @Override
-    public int[] getPixels() {
-        return pixels;
-    }
 }

@@ -1,4 +1,4 @@
-package com.zeejfps.engine2d.util;
+package com.zeejfps.engine2d.core.util;
 
 /**
  * Created by Zeejfps on 12/18/13.

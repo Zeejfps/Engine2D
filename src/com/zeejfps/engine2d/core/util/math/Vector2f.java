@@ -1,30 +1,29 @@
-package com.zeejfps.engine2d.util;
+package com.zeejfps.engine2d.core.util.math;
 
 /**
  * Created by Zeejfps on 12/21/13.
  */
-public class Vector3f {
+public class Vector2f {
 
-    public float x, y, z;
+    public float x, y;
 
-    public Vector3f(float x, float y, float z) {
+    public Vector2f(float x, float y) {
         this.x = x;
         this.y = y;
-        this.z = z;
     }
 
-    public Vector3f(Vector3f v){
-        this(v.x, v.y, v.z);
+    public Vector2f(Vector2f v) {
+        this(v.x, v.y);
     }
 
-    public Vector3f() {}
+    public Vector2f() {}
 
     /**
      * This method returns the zero vector of this vector;
      * @return the zero vector
      */
-    public Vector3f getZero() {
-        return new Vector3f(0, 0, 0);
+    public Vector2f getZero() {
+        return new Vector2f(0, 0);
     }
 
     /**
@@ -33,21 +32,19 @@ public class Vector3f {
     public void setZero() {
         x = 0;
         y = 0;
-        z = 0;
     }
 
     /**
      * This method will return a vector with all of its components negated
      * @return negative copy of this vector
      */
-    public Vector3f getNegative() {
-        return new Vector3f(-x, -y, -z);
+    public Vector2f getNegative() {
+        return new Vector2f(-x, -y);
     }
 
     public void setNegative() {
         x = -x;
         y = -y;
-        z = -z;
     }
 
     /**
@@ -55,8 +52,8 @@ public class Vector3f {
      * @param scalar value to multiply by
      * @return resulting vector
      */
-    public Vector3f mul(float scalar) {
-        return new Vector3f(x*scalar, y*scalar, z*scalar);
+    public Vector2f mul(float scalar) {
+        return new Vector2f(x*scalar, y*scalar);
     }
 
     /**
@@ -64,17 +61,17 @@ public class Vector3f {
      * @param scalar value to divide by
      * @return resulting vector
      */
-    public Vector3f div(float scalar) {
-        return new Vector3f(x/scalar, y/scalar, z/scalar);
+    public Vector2f div(float scalar) {
+        return new Vector2f(x/scalar, y/scalar);
     }
 
     /**
      * This method returns a normalized version of this vector
      * @return normalized copy of this vector
      */
-    public Vector3f getNormalized() {
+    public Vector2f getNormalized() {
         final float length = getMagnitude(this);
-        return new Vector3f(x/length, y/length, z/length);
+        return new Vector2f(x/length, y/length);
     }
 
     /**
@@ -84,7 +81,6 @@ public class Vector3f {
         final float length = getMagnitude(this);
         x /= length;
         y /= length;
-        z /= length;
     }
 
     /**
@@ -92,8 +88,8 @@ public class Vector3f {
      * @param v vector to add
      * @return resulting vector
      */
-    public Vector3f add(Vector3f v) {
-        return new Vector3f(x+v.x, y+v.y, z+v.z);
+    public Vector2f add(Vector2f v) {
+        return new Vector2f(x+v.x, y+v.y);
     }
 
     /**
@@ -101,8 +97,8 @@ public class Vector3f {
      * @param v vector to subtract
      * @return resulting vector
      */
-    public Vector3f sub(Vector3f v) {
-        return new Vector3f(x-v.x, y-v.y, z-v.z);
+    public Vector2f sub(Vector2f v) {
+        return new Vector2f(x-v.x, y-v.y);
     }
 
     /**
@@ -110,14 +106,8 @@ public class Vector3f {
      * @param v vector
      * @return resulting vector
      */
-    public float dot(Vector3f v) {
-        return x*v.x + y*v.y + z*v.z;
-    }
-
-    public Vector3f cross(Vector3f v) {
-        return new Vector3f(y*v.z - z*v.y,
-                            z*v.x - x*v.z,
-                            x*v.y - y*v.x);
+    public float dot(Vector2f v) {
+        return x*v.x + y*v.y;
     }
 
     /**
@@ -125,8 +115,8 @@ public class Vector3f {
      * @param v vector to compare
      * @return true if identical
      */
-    public boolean equals(Vector3f v) {
-        return x==v.x && y==v.y && z==v.z;
+    public boolean equals(Vector2f v) {
+        return x==v.x && y==v.y;
     }
 
     /**
@@ -134,14 +124,13 @@ public class Vector3f {
      * @param v vector whose magnitude to calculate
      * @return magnitude
      */
-    public static float getMagnitude(Vector3f v) {
-        return (float)Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+    public static float getMagnitude(Vector2f v) {
+        return (float)Math.sqrt(v.x*v.x + v.y*v.y);
     }
 
-    public static float findDistance(Vector3f start, Vector3f end) {
+    public static float findDistance(Vector2f start, Vector2f end) {
         return (float)Math.sqrt((end.x - start.x) * (end.x - start.x) +
-                                (end.y - start.y) * (end.y - start.y) +
-                                (end.z - start.z) * (end.z - start.z));
+                                (end.y - start.y) * (end.y - start.y));
     }
 
     /**
@@ -150,7 +139,7 @@ public class Vector3f {
      * @param v2 second vector
      * @return angle in radiance
      */
-    public static float findAngle(Vector3f v1, Vector3f v2) {
+    public static float findAngle(Vector2f v1, Vector2f v2) {
         return (float)Math.acos(v1.dot(v2) / getMagnitude(v1) * getMagnitude(v2));
     }
 

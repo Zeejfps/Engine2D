@@ -1,18 +1,16 @@
-package com.zeejfps.engine2d.util;
+package com.zeejfps.engine2d.core.util;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * Created by Zeejfps on 12/28/13.
+ * Created by Zeejfps on 1/1/14.
  */
-public class KeyboardOld implements KeyListener {
+public class Keyboard implements KeyListener {
 
-    private static KeyboardOld instance = null;
-
-    private static boolean[] keysDown = new boolean[256];
-    private static boolean[] keysPressed = new boolean[256];
-    private static boolean[] keysReleased = new boolean[256];
+    private boolean[] keysDown = new boolean[256];
+    private boolean[] keysPressed = new boolean[256];
+    private boolean[] keysReleased = new boolean[256];
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -37,28 +35,22 @@ public class KeyboardOld implements KeyListener {
         keysDown[e.getKeyCode()] = false;
     }
 
-    public static boolean isKeyPressed(int key) {
+    public boolean isKeyPressed(int key) {
         boolean b = keysPressed[key];
         keysPressed[key] = false;
 
         return b;
     }
 
-    public static boolean isKeyReleased(int key) {
+    public boolean isKeyReleased(int key) {
         boolean b = keysReleased[key];
         keysReleased[key] = false;
 
         return b;
     }
 
-    public static boolean isKeyDown(int key) {
+    public boolean isKeyDown(int key) {
         return keysDown[key];
-    }
-
-    public static KeyboardOld getInstance() {
-        if (instance == null)
-            instance = new KeyboardOld();
-        return instance;
     }
 
 }

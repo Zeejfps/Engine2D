@@ -1,6 +1,8 @@
-package com.zeejfps.engine2d;
+package com.zeejfps.engine2d.core;
 
-import com.zeejfps.engine2d.util.Clock;
+import com.zeejfps.engine2d.core.Screen;
+import com.zeejfps.engine2d.core.util.Clock;
+import com.zeejfps.engine2d.core.Context;
 
 import javax.swing.*;
 import java.awt.*;
