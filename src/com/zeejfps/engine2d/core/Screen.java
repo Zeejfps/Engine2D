@@ -24,30 +24,37 @@ public class Screen extends Canvas {
         this.width = width; this.height = height;
         this.scale = scale;
 
-        drawImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        drawImage = new BufferedImage(width*scale, height*scale, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt)drawImage.getRaster().getDataBuffer()).getData();
     }
 
-    public void render(Renderable renderable) {
+    public void render(Renderable obj) {
 
-        final int localX = renderable.getOffsetX();
-        final int localY = renderable.getOffsetY();
+        final int localX = obj.getOffsetX();
+        final int localY = obj.getOffsetY();
 
         int pixelPosX;
         int pixelPosY;
-        for (int i = 0; i < renderable.getHeight(); i++) {
+        for (int i = 0; i < obj.getHeight(); i++) {
 
-            for (int j = 0; j < renderable.getWidth(); j++) {
+            for (int j = 0; j < obj.getWidth(); j++) {
 
                 pixelPosX = localX + j;
-                if (pixelPosX < 0 || pixelPosX >= width)
+                if (pixelPosX < 0 || pixelPosX >= getWidth())
                     continue;
 
                 pixelPosY = localY + i;
-                if (pixelPosY < 0 || pixelPosY >= height) {
+                if (pixelPosY < 0 || pixelPosY >= getHeight()) {
                     continue;
                 }
-                pixels[pixelPosY*width + pixelPosX] = renderable.getPixels()[i* renderable.getWidth() + j];
+
+                for (int k = 0; k < scale; k++) {
+
+                    for (int n = 0; n < scale; n++) {
+                        pixels[(localY + i*scale + n)*width*scale + localX + j*scale + k] = obj.getPixels()[i* obj.getWidth() + j];
+                    }
+
+                }
 
             }
 
@@ -90,6 +97,16 @@ public class Screen extends Canvas {
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(width * scale, height * scale);
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
     }
 
 }
