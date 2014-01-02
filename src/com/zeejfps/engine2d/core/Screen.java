@@ -12,28 +12,20 @@ import java.awt.image.DataBufferInt;
  */
 public class Screen extends Canvas {
 
-    private final int offsetX, offsetY, width, height, scale, minX, minY, maxX, maxY;
-    private static  BufferedImage drawImage;
-    private static int[] pixels;
+    private final int width, height, scale;
+    private final BufferedImage drawImage;
+    private int[] pixels;
     private int clearColor = 0x000000;
 
     private BufferStrategy bs = null;
 
-    public Screen(int offsetX, int offsetY, int width, int height, int scale) {
+    public Screen(int width, int height, int scale) {
 
-        this.offsetX = offsetX; this.offsetY = offsetY;
         this.width = width; this.height = height;
         this.scale = scale;
 
-        drawImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        drawImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt)drawImage.getRaster().getDataBuffer()).getData();
-
-        minX = offsetX;
-        minY = offsetY;
-
-        maxX = offsetX + width;
-        maxY = offsetY + height;
-
     }
 
     public void render(Renderable renderable) {
@@ -48,11 +40,11 @@ public class Screen extends Canvas {
             for (int j = 0; j < renderable.getWidth(); j++) {
 
                 pixelPosX = localX + j;
-                if (pixelPosX < minX || pixelPosX >= maxX)
+                if (pixelPosX < 0 || pixelPosX >= width)
                     continue;
 
                 pixelPosY = localY + i;
-                if (pixelPosY < minY || pixelPosY >= maxY) {
+                if (pixelPosY < 0 || pixelPosY >= height) {
                     continue;
                 }
                 pixels[pixelPosY*width + pixelPosX] = renderable.getPixels()[i* renderable.getWidth() + j];
@@ -73,9 +65,8 @@ public class Screen extends Canvas {
 
     public void clear() {
 
-        System.out.println("clear");
         for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = 0xff000000;
+            pixels[i] = clearColor;
         }
 
     }

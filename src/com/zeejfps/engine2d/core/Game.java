@@ -1,8 +1,8 @@
 package com.zeejfps.engine2d.core;
 
-import com.zeejfps.engine2d.core.Screen;
 import com.zeejfps.engine2d.core.util.Clock;
-import com.zeejfps.engine2d.core.Context;
+import com.zeejfps.engine2d.core.util.Keyboard;
+import com.zeejfps.engine2d.core.util.Mouse;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,23 +10,25 @@ import java.awt.*;
 /**
  * Created by Zeejfps on 12/28/13.
  */
-public abstract class Shell {
+public abstract class Game {
 
     private final JFrame gameWindow;
-    private final Screen gameScreen;
-    private final Context gameContext;
-    private final Engine gameEngine;
+    private final Loop gameLoop;
+    public final Screen screen;
+    public final Keyboard keyboard;
+    public final Mouse mouse;
 
     protected boolean displayStats = true;
     private volatile boolean running = false;
 
-    public Shell(final int width, final int height, final int scale, final String title, int tps, int fps) {
+    public Game(final int width, final int height, final int scale, final String title, int tps, int fps) {
 
-        gameEngine = new Engine(tps, fps);
-
+        gameLoop = new Loop(tps, fps);
         gameWindow = new JFrame(title);
-        gameScreen = new Screen(0, 0, width, height, scale);
-        gameContext = new Context();
+
+        screen = new Screen(width, height, scale);
+        keyboard = new Keyboard();
+        mouse = new Mouse();
 
         initDisplay(title);
     }
@@ -35,7 +37,7 @@ public abstract class Shell {
 
         if (!running) {
             running = true;
-            new Thread(gameEngine).start();
+            new Thread(gameLoop).start();
         }
     }
 
@@ -47,37 +49,29 @@ public abstract class Shell {
 
     private void initDisplay(String title) {
 
-        gameScreen.addKeyListener(gameContext.keyboard);
-        gameScreen.addMouseListener(gameContext.mouse);
+        screen.addKeyListener(keyboard);
+        screen.addMouseListener(mouse);
 
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameWindow.setResizable(false);
         gameWindow.setLayout(new BorderLayout());
-        gameWindow.add(gameScreen, BorderLayout.CENTER);
+        gameWindow.add(screen, BorderLayout.CENTER);
         gameWindow.pack();
         gameWindow.setLocationRelativeTo(null);
         gameWindow.setVisible(true);
 
-        gameScreen.requestFocusInWindow();
-    }
-
-    public Screen getScreen() {
-        return gameScreen;
-    }
-
-    public Context getContext() {
-        return gameContext;
+        screen.requestFocusInWindow();
     }
 
     public abstract void onStart();
 
-    public abstract void tick(Context context);
+    public abstract void tick();
 
     public abstract void render(Screen screen);
 
     public abstract void onStop();
 
-    private class Engine implements Runnable {
+    private class Loop implements Runnable {
 
         private final int maxSkippedFrames = 9;
         private final Clock ticksClock = new Clock();
@@ -89,7 +83,7 @@ public abstract class Shell {
         private int ticks = 0;
         private int frames = 0;
 
-        public Engine(int tps, int fps) {
+        public Loop(int tps, int fps) {
 
             setTps(tps);
             setFps(fps);
@@ -113,7 +107,7 @@ public abstract class Shell {
                 skippedFrames = 0;
                 while (runTime >= nsPerTick && skippedFrames <= maxSkippedFrames) {
 
-                    tick(gameContext);
+                    tick();
                     runTime -= nsPerTick;
                     skippedFrames ++;
 
@@ -123,7 +117,7 @@ public abstract class Shell {
                 framesClock.tick();
                 if (framesClock.getRunTimeNs() >= nsPerFrame) {
 
-                    render(gameScreen);
+                    render(screen);
 
                     framesClock.reset();
                     frames++;

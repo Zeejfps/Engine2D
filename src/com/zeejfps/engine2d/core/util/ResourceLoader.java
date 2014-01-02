@@ -18,7 +18,7 @@ public class ResourceLoader {
             return new SpriteSheet(image, tileWidth, tileHeight);
 
         } catch (IOException e) {
-            System.err.println("Could not load spriteSheet!");
+            System.err.println("Could not load SPRITE_SHEET!");
             e.printStackTrace();
             System.exit(1);
         }
