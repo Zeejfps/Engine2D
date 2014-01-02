@@ -20,7 +20,7 @@ public abstract class Shell {
 
     public Shell(final int width, final int height, final int scale, final String title, int tps, int fps) {
 
-        gameEngine = new Engine(Clock.NS_IN_SEC / tps, Clock.NS_IN_SEC / fps);
+        gameEngine = new Engine(tps, fps);
 
         gameWindow = new JFrame(title);
         gameScreen = new Screen(0, 0, width, height, scale);
@@ -59,13 +59,6 @@ public abstract class Shell {
         gameScreen.requestFocusInWindow();
     }
 
-    public void setFps(int fps) {
-        if (fps < 1)
-            gameEngine.nsPerFrame = (float)Clock.NS_IN_SEC / 9999f;
-        else
-            gameEngine.nsPerFrame = (float)Clock.NS_IN_MS / (float)fps;
-    }
-
     public Screen getScreen() {
         return gameScreen;
     }
@@ -94,9 +87,10 @@ public abstract class Shell {
         private int ticks = 0;
         private int frames = 0;
 
-        public Engine(float nsPerTick, float nsPerFrame) {
-            this.nsPerTick = nsPerTick;
-            this.nsPerFrame = nsPerFrame;
+        public Engine(int tps, int fps) {
+
+            setTps(tps);
+            setFps(fps);
         }
 
         @Override
@@ -154,6 +148,20 @@ public abstract class Shell {
             ticksClock.stop();
             framesClock.stop();
 
+        }
+
+        public void setFps(int fps) {
+            if (fps < 1)
+                nsPerFrame = (float)Clock.NS_IN_SEC / 9999999f;
+            else
+                nsPerFrame = (float)Clock.NS_IN_SEC / (float)fps;
+        }
+
+        public void setTps(int tps) {
+            if (tps < 1)
+                nsPerTick = (float)Clock.NS_IN_SEC / 9999f;
+            else
+                nsPerTick = (float)Clock.NS_IN_SEC / (float)tps;
         }
 
     }

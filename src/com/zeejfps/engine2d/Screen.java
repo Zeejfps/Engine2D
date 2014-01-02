@@ -14,8 +14,10 @@ public class Screen extends Canvas implements Renderable {
 
     private final int offsetX, offsetY, width, height, scale, minX, minY, maxX, maxY;
     private final BufferedImage drawImage;
-    private final int[] pixels;
+    private int[] pixels;
     private int clearColor = 0x000000;
+
+    private BufferStrategy bs = null;
 
     public Screen(int offsetX, int offsetY, int width, int height, int scale) {
 
@@ -80,14 +82,14 @@ public class Screen extends Canvas implements Renderable {
 
     public void update() {
 
-        BufferStrategy bs = getBufferStrategy();
+        bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(3);
             return;
         }
 
         Graphics g = bs.getDrawGraphics();
-        g.drawImage(drawImage, 0, 0, width*scale, height*scale, null);
+        g.drawImage(drawImage, 0, 0, 640, 480, null);
         g.dispose();
 
         bs.show();
