@@ -1,4 +1,4 @@
-package com.zeejfps.engine2d.core.util;
+package com.zeejfps.engine2d.util;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

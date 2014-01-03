@@ -1,4 +1,4 @@
-package com.zeejfps.engine2d.core;
+package com.zeejfps.engine2d;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -8,9 +8,11 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Created by Zeejfps on 12/29/13.
  */
-public class Screen {
+public class GameScreen {
 
-    public Screen(int width, int height, String title) {
+    private static GameScreen instance = null;
+
+    private GameScreen(int width, int height, String title) {
 
         try {
 
@@ -23,6 +25,10 @@ public class Screen {
             e.printStackTrace();
             System.exit(1);
         }
+
+    }
+
+    public void render() {
 
     }
 
@@ -52,6 +58,14 @@ public class Screen {
 
     public void destroy() {
         Display.destroy();
+    }
+
+    public static GameScreen getInstance(int width, int height, String title) {
+
+        if (instance == null)
+            instance = new GameScreen(width, height, title);
+
+        return instance;
     }
 
 }

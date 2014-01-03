@@ -1,9 +1,6 @@
-package com.zeejfps.engine2d.core.util;
+package com.zeejfps.engine2d;
 
 import org.lwjgl.LWJGLException;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 /**
  * Created by Zeejfps on 1/1/14.
@@ -11,12 +8,13 @@ import java.awt.event.KeyListener;
 public class Keyboard {
 
     private static final int NUM_OF_KEYS = 256;
+    private static Keyboard instance = null;
 
     private boolean[] keysDown = new boolean[NUM_OF_KEYS];
     private boolean[] keysPressed = new boolean[NUM_OF_KEYS];
     private boolean[] keysReleased = new boolean[NUM_OF_KEYS];
 
-    public Keyboard() {
+    private Keyboard() {
 
         try {
 
@@ -75,6 +73,13 @@ public class Keyboard {
 
     public void destroy() {
         org.lwjgl.input.Keyboard.destroy();
+    }
+
+    public static Keyboard getInstance() {
+        if (instance == null)
+            instance = new Keyboard();
+
+        return instance;
     }
 
 }

@@ -1,23 +1,14 @@
-package com.zeejfps.engine2d.core;
-
-import com.zeejfps.engine2d.core.util.Clock;
-import com.zeejfps.engine2d.core.util.Keyboard;
-import com.zeejfps.engine2d.core.util.Mouse;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.DisplayMode;
-
-import javax.swing.*;
-import java.awt.*;
+package com.zeejfps.engine2d;
 
 /**
  * Created by Zeejfps on 12/28/13.
  */
 public abstract class Game {
 
-    private final Context context;
+    private final GameContext context;
     private final int width, height;
-    private String title;
+    private final String title;
+    private final Thread gameThread;
     private int tps, fps;
 
     private volatile boolean running = false;
@@ -28,15 +19,15 @@ public abstract class Game {
         this.title = title;
         this.tps = tps; this.fps = fps;
 
-        context = new Context(this);
+        context = GameContext.getInstance(this);
+        gameThread = new Thread(context);
     }
 
     public final void start() {
 
         if (!running) {
             running = true;
-
-            new Thread(context).start();
+            gameThread.start();
         }
     }
 
@@ -48,9 +39,9 @@ public abstract class Game {
 
     public abstract void onStart();
 
-    public abstract void tick(Context context);
+    public abstract void tick(GameContext context);
 
-    public abstract void render(Screen screen);
+    public abstract void render(GameScreen screen);
 
     public abstract void onStop();
 
@@ -76,6 +67,10 @@ public abstract class Game {
 
     public boolean isRunning() {
         return running;
+    }
+
+    public GameContext getContext() {
+        return context;
     }
 
 }

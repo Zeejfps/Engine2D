@@ -1,37 +1,46 @@
-package com.zeejfps.engine2d.core;
+package com.zeejfps.engine2d;
 
-import com.zeejfps.engine2d.core.util.Clock;
-import com.zeejfps.engine2d.core.util.Keyboard;
-import com.zeejfps.engine2d.core.util.Mouse;
+import com.zeejfps.engine2d.util.Clock;
+import com.zeejfps.engine2d.util.Mouse;
 
 /**
  * User: Zeejfps
  * Date: 1/3/14
  * Time: 4:44 PM
  */
-public class Context implements Runnable {
+public class GameContext implements Runnable {
+
+    private static GameContext instance = null;
 
     private final Game game;
-    protected Screen screen;
+    public GameScreen screen;
     public Keyboard keyboard;
-    protected Mouse mouse;
+    public Mouse mouse;
 
-    public Context(Game game) {
+    private GameContext(Game game) {
         this.game = game;
     }
 
     @Override
     public void run() {
 
-        screen = new Screen(game.getWidth(), game.getHeight(), game.getTitle());
-        keyboard = new Keyboard();
+        screen = GameScreen.getInstance(game.getWidth(), game.getHeight(), game.getTitle());
+        keyboard = Keyboard.getInstance();
         mouse = new Mouse();
 
-        new Loop(game.getTPS(), game.getFPS()).run();
+        new GameLoop(game.getTPS(), game.getFPS()).run();
 
     }
 
-    private class Loop {
+    public static GameContext getInstance(Game game) {
+
+        if (instance == null)
+            instance = new GameContext(game);
+
+        return instance;
+    }
+
+    private class GameLoop {
 
         private final int maxSkippedFrames = 9;
         private final Clock ticksClock = new Clock();
@@ -43,7 +52,7 @@ public class Context implements Runnable {
         private int ticks = 0;
         private int frames = 0;
 
-        public Loop(int tps, int fps) {
+        public GameLoop(int tps, int fps) {
 
             setTps(tps);
             setFps(fps);
@@ -67,7 +76,7 @@ public class Context implements Runnable {
                 while (runTime >= nsPerTick && skippedFrames <= maxSkippedFrames) {
 
                     keyboard.poll();
-                    game.tick(Context.this);
+                    game.tick(GameContext.this);
                     runTime -= nsPerTick;
                     skippedFrames ++;
 
