@@ -1,56 +1,80 @@
 package com.zeejfps.engine2d.core.util;
 
+import org.lwjgl.LWJGLException;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
  * Created by Zeejfps on 1/1/14.
  */
-public class Keyboard implements KeyListener {
+public class Keyboard {
 
-    private boolean[] keysDown = new boolean[256];
-    private boolean[] keysPressed = new boolean[256];
-    private boolean[] keysReleased = new boolean[256];
+    private static final int NUM_OF_KEYS = 256;
 
-    @Override
-    public void keyTyped(KeyEvent e) {
+    private boolean[] keysDown = new boolean[NUM_OF_KEYS];
+    private boolean[] keysPressed = new boolean[NUM_OF_KEYS];
+    private boolean[] keysReleased = new boolean[NUM_OF_KEYS];
 
-    }
+    public Keyboard() {
 
-    @Override
-    public void keyPressed(KeyEvent e) {
+        try {
 
-        if (keysDown[e.getKeyCode()]) {
-            keysPressed[e.getKeyCode()] = false;
-        } else {
-            keysDown[e.getKeyCode()] = true;
-            keysPressed[e.getKeyCode()] = true;
+            org.lwjgl.input.Keyboard.create();
+
+        } catch (LWJGLException e) {
+            e.printStackTrace();
+            System.exit(1);
         }
 
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        keysReleased[e.getKeyCode()] = true;
-        keysDown[e.getKeyCode()] = false;
+    public void poll() {
+
+        for (int i = 0; i < NUM_OF_KEYS; i ++) {
+
+            final boolean isDown = org.lwjgl.input.Keyboard.isKeyDown(i);
+
+            if (isDown && keysDown[i]) {
+
+                keysPressed[i] = false;
+
+            } else if (isDown) {
+
+                keysDown[i] = true;
+                keysPressed[i] = true;
+                keysReleased[i] = false;
+
+            } else if (keysDown[i]){
+
+                keysReleased[i] = true;
+                keysDown[i] = false;
+
+            } else {
+
+                keysReleased[i] = false;
+                keysPressed[i] = false;
+
+            }
+
+        }
+
     }
 
     public boolean isKeyPressed(int key) {
-        boolean b = keysPressed[key];
-        keysPressed[key] = false;
-
-        return b;
+        return keysPressed[key];
     }
 
     public boolean isKeyReleased(int key) {
-        boolean b = keysReleased[key];
-        keysReleased[key] = false;
-
-        return b;
+        return keysReleased[key];
     }
 
     public boolean isKeyDown(int key) {
         return keysDown[key];
+    }
+
+    public void destroy() {
+        org.lwjgl.input.Keyboard.destroy();
     }
 
 }

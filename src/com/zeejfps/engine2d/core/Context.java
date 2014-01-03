@@ -13,9 +13,8 @@ public class Context implements Runnable {
 
     private final Game game;
     protected Screen screen;
-    protected Keyboard keyboard;
+    public Keyboard keyboard;
     protected Mouse mouse;
-    protected Loop gameLoop;
 
     public Context(Game game) {
         this.game = game;
@@ -67,6 +66,7 @@ public class Context implements Runnable {
                 skippedFrames = 0;
                 while (runTime >= nsPerTick && skippedFrames <= maxSkippedFrames) {
 
+                    keyboard.poll();
                     game.tick(Context.this);
                     runTime -= nsPerTick;
                     skippedFrames ++;
