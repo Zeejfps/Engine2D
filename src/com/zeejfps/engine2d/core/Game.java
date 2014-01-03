@@ -3,6 +3,9 @@ package com.zeejfps.engine2d.core;
 import com.zeejfps.engine2d.core.util.Clock;
 import com.zeejfps.engine2d.core.util.Keyboard;
 import com.zeejfps.engine2d.core.util.Mouse;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.DisplayMode;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,154 +15,67 @@ import java.awt.*;
  */
 public abstract class Game {
 
-    private final JFrame gameWindow;
-    private final Loop gameLoop;
-    public final Screen screen;
-    public final Keyboard keyboard;
-    public final Mouse mouse;
+    private final Context context;
+    private final int width, height;
+    private String title;
+    private int tps, fps;
 
-    protected boolean displayStats = true;
     private volatile boolean running = false;
 
-    public Game(final int width, final int height, final int scale, final String title, int tps, int fps) {
+    public Game(final int width, final int height, final String title, int tps, int fps) {
 
-        gameLoop = new Loop(tps, fps);
-        gameWindow = new JFrame(title);
+        this.width = width; this.height = height;
+        this.title = title;
+        this.tps = tps; this.fps = fps;
 
-        screen = new Screen(width, height, scale);
-        keyboard = new Keyboard();
-        mouse = new Mouse();
-
-        initDisplay(title);
+        context = new Context(this);
     }
 
-    public final synchronized void start() {
+    public final void start() {
 
         if (!running) {
             running = true;
-            new Thread(gameLoop).start();
+
+            new Thread(context).start();
         }
     }
 
-    public final synchronized void stop() {
+    public final void stop() {
 
         if (running)
             running = false;
     }
 
-    private void initDisplay(String title) {
-
-        screen.addKeyListener(keyboard);
-        screen.addMouseListener(mouse);
-
-        gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gameWindow.setResizable(false);
-        gameWindow.setLayout(new BorderLayout());
-        gameWindow.add(screen, BorderLayout.CENTER);
-        gameWindow.pack();
-        gameWindow.setLocationRelativeTo(null);
-        gameWindow.setVisible(true);
-
-        screen.requestFocusInWindow();
-    }
-
     public abstract void onStart();
 
-    public abstract void tick();
+    public abstract void tick(Context context);
 
     public abstract void render(Screen screen);
 
     public abstract void onStop();
 
-    private class Loop implements Runnable {
+    public int getWidth() {
+        return width;
+    }
 
-        private final int maxSkippedFrames = 9;
-        private final Clock ticksClock = new Clock();
-        private final Clock framesClock = new Clock();
+    public int getHeight() {
+        return height;
+    }
 
-        private float nsPerTick;
-        private float nsPerFrame;
+    public String getTitle() {
+        return title;
+    }
 
-        private int ticks = 0;
-        private int frames = 0;
+    public int getTPS() {
+        return tps;
+    }
 
-        public Loop(int tps, int fps) {
+    public int getFPS() {
+        return fps;
+    }
 
-            setTps(tps);
-            setFps(fps);
-        }
-
-        @Override
-        public void run() {
-
-            int skippedFrames;
-            long runTime = 0;
-
-            ticksClock.start();
-            framesClock.start();
-
-            onStart();
-            while (running) {
-
-                ticksClock.tick();
-                runTime += ticksClock.getTimePerTick();
-
-                skippedFrames = 0;
-                while (runTime >= nsPerTick && skippedFrames <= maxSkippedFrames) {
-
-                    tick();
-                    runTime -= nsPerTick;
-                    skippedFrames ++;
-
-                    ticks++;
-                }
-
-                framesClock.tick();
-                if (framesClock.getRunTimeNs() >= nsPerFrame) {
-
-                    render(screen);
-
-                    framesClock.reset();
-                    frames++;
-                }
-
-                if (displayStats) {
-
-                    if (ticksClock.getRunTimeMs() >= 1000) {
-
-                        System.out.println("Ticks: " + ticks + " Frames: " + frames);
-
-                        ticks = 0;
-                        frames = 0;
-
-                        ticksClock.reset();
-
-                    }
-
-                }
-
-            }
-            onStop();
-
-            ticksClock.stop();
-            framesClock.stop();
-
-        }
-
-        public void setFps(int fps) {
-            if (fps < 1)
-                nsPerFrame = (float)Clock.NS_IN_SEC / 9999999f;
-            else
-                nsPerFrame = (float)Clock.NS_IN_SEC / (float)fps;
-        }
-
-        public void setTps(int tps) {
-            if (tps < 1)
-                nsPerTick = (float)Clock.NS_IN_SEC / 9999f;
-            else
-                nsPerTick = (float)Clock.NS_IN_SEC / (float)tps;
-        }
-
+    public boolean isRunning() {
+        return running;
     }
 
 }
