@@ -1,7 +1,6 @@
 package com.zeejfps.engine2d;
 
 import com.zeejfps.engine2d.util.Clock;
-import com.zeejfps.engine2d.util.Mouse;
 
 /**
  * User: Zeejfps
@@ -14,8 +13,7 @@ public class GameContext implements Runnable {
 
     private final Game game;
     public GameScreen screen;
-    public Keyboard keyboard;
-    public Mouse mouse;
+    public Input input;
 
     private GameContext(Game game) {
         this.game = game;
@@ -24,11 +22,15 @@ public class GameContext implements Runnable {
     @Override
     public void run() {
 
-        screen = GameScreen.getInstance(game.getWidth(), game.getHeight(), game.getTitle());
-        keyboard = Keyboard.getInstance();
-        mouse = new Mouse();
+        if (!game.isRunning()) {
 
-        new GameLoop(game.getTPS(), game.getFPS()).run();
+            game.setRunning(true);
+            screen = GameScreen.getInstance(game.getWidth(), game.getHeight(), game.getTitle());
+            input = Input.getInstance();
+
+            new GameLoop(game.getTPS(), game.getFPS()).run();
+
+        }
 
     }
 
@@ -75,8 +77,8 @@ public class GameContext implements Runnable {
                 skippedFrames = 0;
                 while (runTime >= nsPerTick && skippedFrames <= maxSkippedFrames) {
 
-                    keyboard.poll();
-                    game.tick(GameContext.this);
+                    input.poll();
+                    game.tick(game.getContext());
                     runTime -= nsPerTick;
                     skippedFrames ++;
 

@@ -1,24 +1,30 @@
 package com.zeejfps.engine2d;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 /**
  * Created by Zeejfps on 1/1/14.
  */
-public class Keyboard {
+public class Input {
 
     private static final int NUM_OF_KEYS = 256;
-    private static Keyboard instance = null;
+    private static Input instance = null;
 
     private boolean[] keysDown = new boolean[NUM_OF_KEYS];
     private boolean[] keysPressed = new boolean[NUM_OF_KEYS];
     private boolean[] keysReleased = new boolean[NUM_OF_KEYS];
 
-    private Keyboard() {
+    private int mouseX=0 , mouseY=0;
+    private boolean mouseMoved = false;
+
+    private Input() {
 
         try {
 
-            org.lwjgl.input.Keyboard.create();
+            Keyboard.create();
+            Mouse.create();
 
         } catch (LWJGLException e) {
             e.printStackTrace();
@@ -29,9 +35,20 @@ public class Keyboard {
 
     public void poll() {
 
+        final int tempX = Mouse.getX();
+        final int tempY = Mouse.getY();
+
+        if (tempX != mouseX || tempY != mouseY) {
+            mouseX = tempX;
+            mouseY = tempY;
+            mouseMoved = true;
+        } else {
+            mouseMoved = false;
+        }
+
         for (int i = 0; i < NUM_OF_KEYS; i ++) {
 
-            final boolean isDown = org.lwjgl.input.Keyboard.isKeyDown(i);
+            final boolean isDown = Keyboard.isKeyDown(i);
 
             if (isDown && keysDown[i]) {
 
@@ -71,13 +88,31 @@ public class Keyboard {
         return keysDown[key];
     }
 
-    public void destroy() {
-        org.lwjgl.input.Keyboard.destroy();
+    public int getMouseX() {
+        return mouseX;
     }
 
-    public static Keyboard getInstance() {
+    public int getMouseY() {
+        return mouseY;
+    }
+
+    public boolean mouseMoved() {
+        return mouseMoved;
+    }
+
+    public boolean isMouseButtonDown(int button) {
+
+        return Mouse.isButtonDown(button);
+    }
+
+    public void destroy() {
+        Keyboard.destroy();
+        Mouse.destroy();
+    }
+
+    public static Input getInstance() {
         if (instance == null)
-            instance = new Keyboard();
+            instance = new Input();
 
         return instance;
     }

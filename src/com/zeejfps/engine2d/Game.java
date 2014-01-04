@@ -26,7 +26,6 @@ public abstract class Game {
     public final void start() {
 
         if (!running) {
-            running = true;
             gameThread.start();
         }
     }
@@ -35,6 +34,10 @@ public abstract class Game {
 
         if (running)
             running = false;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
     public abstract void onStart();
