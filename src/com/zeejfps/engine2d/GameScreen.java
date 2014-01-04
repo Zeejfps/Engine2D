@@ -28,7 +28,7 @@ public class GameScreen {
 
     }
 
-    public void render() {
+    public void render(Renderable obj) {
 
     }
 

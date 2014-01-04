@@ -7,10 +7,10 @@ import org.lwjgl.input.Mouse;
 /**
  * Created by Zeejfps on 1/1/14.
  */
-public class Input {
+public class GameInput {
 
     private static final int NUM_OF_KEYS = 256;
-    private static Input instance = null;
+    private static GameInput instance = null;
 
     private boolean[] keysDown = new boolean[NUM_OF_KEYS];
     private boolean[] keysPressed = new boolean[NUM_OF_KEYS];
@@ -19,7 +19,7 @@ public class Input {
     private int mouseX=0 , mouseY=0;
     private boolean mouseMoved = false;
 
-    private Input() {
+    private GameInput() {
 
         try {
 
@@ -110,9 +110,9 @@ public class Input {
         Mouse.destroy();
     }
 
-    public static Input getInstance() {
+    public static GameInput getInstance() {
         if (instance == null)
-            instance = new Input();
+            instance = new GameInput();
 
         return instance;
     }

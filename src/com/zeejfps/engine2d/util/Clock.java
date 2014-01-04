@@ -5,8 +5,8 @@ package com.zeejfps.engine2d.util;
  */
 public class Clock {
 
-    public static final long NS_IN_MS = 1000000;
-    public static final long NS_IN_SEC = 1000000000;
+    public static final long NS_PER_MS = 1000000;
+    public static final long NS_PER_SEC = 1000000000;
 
     private long currTime, lastTime, timePerTick;
     private long runTime = 0;
@@ -47,7 +47,7 @@ public class Clock {
             runTime += (long)(timePerTick * timeScale);
         }
 
-        deltaTime = ((float)(runTime - lastRunTime) / (float)NS_IN_SEC) * Math.abs(timeScale);
+        deltaTime = ((float)(runTime - lastRunTime) / (float) NS_PER_SEC) * Math.abs(timeScale);
         lastRunTime = runTime;
         lastTime = currTime;
 
@@ -84,7 +84,7 @@ public class Clock {
     }
 
     public long getRunTimeMs() {
-        return runTime / NS_IN_MS;
+        return runTime / NS_PER_MS;
     }
 
     public long getRunTimeNs() {

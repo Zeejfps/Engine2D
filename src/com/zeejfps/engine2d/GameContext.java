@@ -13,7 +13,7 @@ public class GameContext implements Runnable {
 
     private final Game game;
     public GameScreen screen;
-    public Input input;
+    public GameInput input;
 
     private GameContext(Game game) {
         this.game = game;
@@ -26,7 +26,7 @@ public class GameContext implements Runnable {
 
             game.setRunning(true);
             screen = GameScreen.getInstance(game.getWidth(), game.getHeight(), game.getTitle());
-            input = Input.getInstance();
+            input = GameInput.getInstance();
 
             new GameLoop(game.getTPS(), game.getFPS()).run();
 
@@ -112,6 +112,7 @@ public class GameContext implements Runnable {
             }
             game.onStop();
             screen.destroy();
+            input.destroy();
 
             ticksClock.stop();
             framesClock.stop();
@@ -120,16 +121,16 @@ public class GameContext implements Runnable {
 
         public void setFps(int fps) {
             if (fps < 1)
-                nsPerFrame = (float)Clock.NS_IN_SEC / 9999999f;
+                nsPerFrame = (float)Clock.NS_PER_SEC / 9999999f;
             else
-                nsPerFrame = (float)Clock.NS_IN_SEC / (float)fps;
+                nsPerFrame = (float)Clock.NS_PER_SEC / (float)fps;
         }
 
         public void setTps(int tps) {
             if (tps < 1)
-                nsPerTick = (float)Clock.NS_IN_SEC / 9999f;
+                nsPerTick = (float)Clock.NS_PER_SEC / 9999f;
             else
-                nsPerTick = (float)Clock.NS_IN_SEC / (float)tps;
+                nsPerTick = (float)Clock.NS_PER_SEC / (float)tps;
         }
 
     }
