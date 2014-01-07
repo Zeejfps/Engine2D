@@ -67,8 +67,7 @@ public abstract class Shader {
             return sb.toString();
 
         } catch (FileNotFoundException e) {
-            System.err.println("Incorrect file name!");
-            System.err.println("Usage: basicVert.ver");
+            System.err.println("Could not find file: " + fileName);
             e.printStackTrace();
             System.exit(1);
         } catch (IOException e) {
