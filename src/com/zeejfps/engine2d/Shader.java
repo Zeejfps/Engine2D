@@ -1,5 +1,7 @@
 package com.zeejfps.engine2d;
 
+import com.zeejfps.engine2d.util.math.Vector2f;
+import com.zeejfps.engine2d.util.math.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.io.BufferedReader;
@@ -86,6 +88,33 @@ public abstract class Shader {
         }
 
         return null;
+    }
+
+    public static void setUniformInt(int program, String uniform, int value) {
+        glUniform1i(Shader.getUniform(program, uniform), value);
+    }
+
+    public static void setUniformFlt(int program, String uniform, float value) {
+        glUniform1f(Shader.getUniform(program, uniform), value);
+    }
+
+    public static void setUniformVec2(int program, String uniform, Vector2f value) {
+        glUniform2f(Shader.getUniform(program, uniform), value.x, value.y);
+    }
+
+    public static void setUniformVec3(int program, String uniform, Vector3f value) {
+        glUniform3f(Shader.getUniform(program, uniform), value.x, value.y, value.z);
+    }
+
+    public static int getUniform(int program, String uniform) {
+
+        int location = glGetUniformLocation(program, uniform);
+        if (location == -1) {
+            System.err.println("Could not find uniform: " + uniform);
+            System.exit(1);
+        }
+
+        return location;
     }
 
 }
