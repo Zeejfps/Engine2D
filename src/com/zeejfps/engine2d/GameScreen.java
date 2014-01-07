@@ -30,6 +30,7 @@ public class GameScreen {
 
     public void render(Renderable obj) {
 
+
     }
 
     public void clear(int mask) {
