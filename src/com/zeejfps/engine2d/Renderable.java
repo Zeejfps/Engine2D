@@ -88,4 +88,18 @@ public class Renderable {
         return 0;
     }
 
+    public static int makeTexture(int[] pixels, int width, int height) {
+
+        final IntBuffer ib = BufferUtils.createIntBuffer(pixels.length);
+        ib.put(pixels);
+        ib.flip();
+
+        int texture = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_INT, ib);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        return 0;
+    }
+
 }

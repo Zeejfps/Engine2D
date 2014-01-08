@@ -1,27 +1,59 @@
 package com.zeejfps.engine2d.util;
 
+import com.zeejfps.engine2d.Renderable;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL30;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL11.*;
+
 /**
- * Created by Zeejfps on 1/2/14.
+ * Created by Zeejfps on 1/8/14.
  */
 public class Sprite {
 
-    public final int pxWidth, pxHeight;
-    public final int[] pixels;
+    private static float[] vertices = {
+            -0.5f,  0.5f,  0.0f, // 0
+            -0.5f, -0.5f,  0.0f, // 1
+            0.5f, -0.5f,  0.0f, // 2
+            0.5f,  0.5f,  0.0f  // 3
+    };
 
-    public Sprite(SpriteSheet spriteSheet, int locX, int locY, int pxWidth, int pxHeight) {
+    private static int[] indices = {
+            0, 1, 2,
+            2, 3, 0
+    };
 
-        this.pxWidth = pxWidth;
-        this.pxHeight = pxHeight;
-        pixels = loadPixels(spriteSheet, locX, locY, pxWidth, pxHeight);
+    private int vertexBuffer;
+    private int indexBuffer;
+    private int textureBuffer;
+    private int shaderProgram;
+
+    private final int width, height;
+
+    public Sprite(int[] pixels, int shaderProgram, int width, int height) {
+
+        this.width = width;
+        this.height = height;
+
+        vertexBuffer = Renderable.makeBuffer(GL_ARRAY_BUFFER, vertices);
+        indexBuffer = Renderable.makeBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
+        textureBuffer = Renderable.makeTexture(pixels, width, height);
 
     }
 
-    private int[] loadPixels(SpriteSheet spriteSheet, int locX, int locY, int pxWidth, int pxHeight) {
+    public void draw() {
 
-        final int startX = locX * spriteSheet.tileWidth;
-        final int startY = locY * spriteSheet.tileHeight;
+        glUseProgram(shaderProgram);
 
-        return spriteSheet.image.getRGB(startX, startY, pxWidth, pxHeight, null, 0, pxWidth);
+        glBindTexture(GL_TEXTURE_2D, textureBuffer);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
     }
 
