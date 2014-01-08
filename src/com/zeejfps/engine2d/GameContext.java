@@ -97,7 +97,6 @@ public class GameContext implements Runnable {
                 if (true) {
 
                     if (ticksClock.getRunTimeMs() >= 1000) {
-
                         System.out.println("Ticks: " + ticks + " Frames: " + frames);
 
                         ticks = 0;

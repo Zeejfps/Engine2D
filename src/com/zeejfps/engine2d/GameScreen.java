@@ -3,6 +3,8 @@ package com.zeejfps.engine2d;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL20;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -28,7 +30,7 @@ public class GameScreen {
 
     }
 
-    public void render(Renderable obj) {
+    public void render(Renderable batch) {
 
 
     }

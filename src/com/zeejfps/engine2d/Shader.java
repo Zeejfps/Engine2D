@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 
 /**
  * User: Zeejfps
@@ -49,7 +50,7 @@ public abstract class Shader {
         return program;
     }
 
-    public static String loadSource(String fileName) {
+    private static String loadSource(String fileName) {
 
         StringBuilder sb = new StringBuilder();
         BufferedReader br = null;
@@ -89,27 +90,22 @@ public abstract class Shader {
         return null;
     }
 
-    public static void setUniformInt(int program, String uniform, int value) {
-        glUniform1i(Shader.getUniform(program, uniform), value);
-    }
-
-    public static void setUniformFlt(int program, String uniform, float value) {
-        glUniform1f(Shader.getUniform(program, uniform), value);
-    }
-
-    public static void setUniformVec2(int program, String uniform, Vector2f value) {
-        glUniform2f(Shader.getUniform(program, uniform), value.x, value.y);
-    }
-
-    public static void setUniformVec3(int program, String uniform, Vector3f value) {
-        glUniform3f(Shader.getUniform(program, uniform), value.x, value.y, value.z);
-    }
-
-    public static int getUniform(int program, String uniform) {
+    public static int getUniformLocation(int program, String uniform) {
 
         int location = glGetUniformLocation(program, uniform);
         if (location == -1) {
             System.err.println("Could not find uniform: " + uniform);
+            System.exit(1);
+        }
+
+        return location;
+    }
+
+    public static int getAttribLocation(int program, String attribute) {
+
+        int location = glGetAttribLocation(program, attribute);
+        if (location == -1) {
+            System.err.println("Could not find attribute: " + attribute);
             System.exit(1);
         }
 
